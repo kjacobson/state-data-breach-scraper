@@ -26,8 +26,8 @@ import puppeteer from 'puppeteer';
               breachDates,
               reportedDate,
             });
-        }
       }
+  }
   catch(e) { console.error(e); }
 
   await browser.close();
