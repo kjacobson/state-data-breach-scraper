@@ -23,7 +23,7 @@ import puppeteer from 'puppeteer';
       const rows = await table.$$('tbody > tr');
       for (const row of rows) {
         try {
-            const [bizName, address, city, state, zip, dataTypes, affected, _, __, published] = await row.$$("td");
+            const [bizName, address, city, state, zip, dataTypes, affected, _, notice, published] = await row.$$("td");
             const businessName = await page.evaluate((el) => el.textContent.trim(), bizName);
             const businessAddress = await page.evaluate((el) => el.textContent.trim(), address);
             const businessCity = await page.evaluate((el) => el.textContent.trim(), city);
@@ -34,6 +34,8 @@ import puppeteer from 'puppeteer';
             numberAffected = parseInt(numberAffected, 10);
             let dataAccessed = await page.evaluate((el) => el.textContent.trim(), dataTypes);
             dataAccessed = dataAccessed.split(';');
+            let noticeMethods = await page.evaluate((el) => el.textContent.trim(), notice);
+            noticeMethods = noticeMethods.split(';');
             console.log({
               businessName,
               businessAddress,
@@ -43,6 +45,7 @@ import puppeteer from 'puppeteer';
               publishedDate,
               numberAffected,
               dataAccessed,
+              noticeMethods,
             });
         }
         catch(e) { console.error(e); }
