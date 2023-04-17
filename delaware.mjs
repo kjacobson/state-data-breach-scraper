@@ -24,7 +24,7 @@ import puppeteer from 'puppeteer';
             if (dateString.trim().indexOf("and") > -1) {
                breachDates = dateString.split("and").map((date) => date.trim()); 
             } else
-            if (dateString.trim().indexOf("–")) {
+              if (dateString.trim().indexOf("–") > -1) {
                [startDate, endDate] = dateString.split("–").map((date) => date.trim());
             } else {
                 startDate = dateString.trim();
