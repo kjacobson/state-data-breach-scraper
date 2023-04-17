@@ -4,7 +4,7 @@ import puppeteer from 'puppeteer';
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
 
-  await page.goto('https://www.iowaattorneygeneral.gov/for-consumers/security-breach-notifications', { waitUnti: 'networkidle0' });
+  await page.goto('https://www.iowaattorneygeneral.gov/for-consumers/security-breach-notifications', { waitUntil: 'networkidle0' });
   await page.setViewport({width: 1280, height: 1024});
   let years = await page.$$('#navigation > ul > li:nth-child(8) > ul > li');
 

@@ -1,4 +1,3 @@
-
 import puppeteer from 'puppeteer';
 
 const pages = [
@@ -12,7 +11,7 @@ const months = /January|February|March|April|May|June|July|August|September|Octo
     await page.setViewport({width: 1280, height: 1024});
 
     for (const letter of pages) {
-        await page.goto(`https://www.doj.nh.gov/consumer/security-breaches/${letter}.htm`, { waitUnti: 'networkidle0' });
+        await page.goto(`https://www.doj.nh.gov/consumer/security-breaches/${letter}.htm`, { waitUntil: 'networkidle0' });
         await page.waitForSelector('#bodycontainer > main');
         const listItems = await page.$$('#bodycontainer > main ul > li > a');
         for (const item of listItems) {

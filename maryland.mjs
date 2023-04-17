@@ -4,7 +4,7 @@ import puppeteer from 'puppeteer';
     const browser = await puppeteer.launch({ headless: false });
     const page = await browser.newPage();
 
-    await page.goto('https://www.marylandattorneygeneral.gov/Pages/IdentityTheft/breachnotices.aspx', { waitUnti: 'networkidle0' });
+    await page.goto('https://www.marylandattorneygeneral.gov/Pages/IdentityTheft/breachnotices.aspx', { waitUntil: 'networkidle0' });
     await page.setViewport({width: 1280, height: 1024});
 
     try {

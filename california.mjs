@@ -4,7 +4,7 @@ import puppeteer from 'puppeteer';
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
 
-  await page.goto('https://oag.ca.gov/privacy/databreach/list', { waitUnti: 'networkidle0' });
+  await page.goto('https://oag.ca.gov/privacy/databreach/list', { waitUntil: 'networkidle0' });
   await page.setViewport({width: 1280, height: 1024});
 
   try {
@@ -32,4 +32,3 @@ import puppeteer from 'puppeteer';
 
   await browser.close();
 })();
-

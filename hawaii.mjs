@@ -4,7 +4,7 @@ import puppeteer from 'puppeteer';
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
 
-  await page.goto('https://cca.hawaii.gov/ocp/notices/security-breach/', { waitUnti: 'networkidle0' });
+  await page.goto('https://cca.hawaii.gov/ocp/notices/security-breach/', { waitUntil: 'networkidle0' });
   await page.setViewport({width: 1280, height: 1024});
   const pageSizeSelect = await page.waitForSelector('[name="tablepress-1_length"]');
   await pageSizeSelect.select("100");

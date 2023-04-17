@@ -5,7 +5,7 @@ import puppeteer from 'puppeteer';
   const page = await browser.newPage();
 
   // TODO: older archives in XSL format
-  await page.goto('https://apps.web.maine.gov/online/aeviewer/ME/40/list.shtml', { waitUnti: 'networkidle0' });
+  await page.goto('https://apps.web.maine.gov/online/aeviewer/ME/40/list.shtml', { waitUntil: 'networkidle0' });
   await page.setViewport({width: 1280, height: 1024});
   const pageSizeSelect = await page.waitForSelector('[name="DataTables_Table_0_length"]');
   await pageSizeSelect.select("100");
