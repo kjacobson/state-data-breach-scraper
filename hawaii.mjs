@@ -12,6 +12,8 @@ import puppeteer from 'puppeteer';
   let err;
   while(!err) {
       try {
+          // for most of the states, we start from the last page
+          // it's not necessary, but this routine is for parity
           const nextPage = await page.waitForSelector(nextPageSelector);
           const nav = page.waitForNavigation();
           await page.evaluate((el) => el.click(), nextPage);

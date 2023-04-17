@@ -10,6 +10,8 @@ import puppeteer from 'puppeteer';
   await pageSizeSelect.select("100");
   let err;
   while(!err) {
+      // for most of the states, we start from the last page
+      // it's not necessary, but this routine is for parity
       try {
           const currentPage = await page.waitForSelector("#grid_paginate .paginate_button.current");
           const currentPageText = await page.evaluate(el => el.textContent.trim(), currentPage);
