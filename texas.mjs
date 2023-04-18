@@ -1,8 +1,17 @@
-import puppeteer from 'puppeteer'
+import puppeteer from 'puppeteer-core'
+import chromium from '@sparticuz/chromium'
 
 export const handler = async () => {
   const DATA = []
-  const browser = await puppeteer.launch({ headless: false })
+  const browser = await puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath:
+      process.env.NODE_ENV !== 'production'
+        ? './chrome/mac_arm-1131672/chrome-mac/Chromium.app/Contents/MacOS/Chromium'
+        : await chromium.executablePath,
+    headless: process.env.NODE_ENV === 'production',
+  })
   const page = await browser.newPage()
 
   await page.goto(
@@ -24,7 +33,6 @@ export const handler = async () => {
       (el) => el.textContent,
       selectedPageLI
     )
-    console.log('Gathering data from page ' + selectedPageNumber + '...')
     const table = await page.waitForSelector('#mycdrs')
     await page.waitForFunction(
       () => document.querySelectorAll('#mycdrs > tbody > tr').length > 0
@@ -114,6 +122,6 @@ export const handler = async () => {
   return DATA
 }
 
-if (process.env.RUN) {
+if (process.env.NODE_ENV !== 'production') {
   handler()
 }

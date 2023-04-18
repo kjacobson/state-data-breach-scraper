@@ -1,7 +1,17 @@
-import puppeteer from 'puppeteer'
+import puppeteer from 'puppeteer-core'
+import chromium from '@sparticuz/chromium'
 
-;(async () => {
-  const browser = await puppeteer.launch({ headless: false })
+const handler = async () => {
+  const DATA = []
+  const browser = await puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath:
+      process.env.NODE_ENV !== 'production'
+        ? './chrome/mac_arm-1131672/chrome-mac/Chromium.app/Contents/MacOS/Chromium'
+        : await chromium.executablePath,
+    headless: process.env.NODE_ENV === 'production',
+  })
   const page = await browser.newPage()
 
   await page.goto(
@@ -35,7 +45,7 @@ import puppeteer from 'puppeteer'
       reportedDate = reportedDate.trim()
       let numberAffected = await page.evaluate((el) => el.textContent, affected)
       numberAffected = parseInt(numberAffected.trim(), 10)
-      console.log({
+      DATA.push({
         businessName,
         startDate,
         endDate,
@@ -49,4 +59,11 @@ import puppeteer from 'puppeteer'
   }
 
   await browser.close()
-})()
+
+  console.log(DATA)
+  return DATA
+}
+
+if (process.env.NODE_ENV !== 'production') {
+  handler()
+}

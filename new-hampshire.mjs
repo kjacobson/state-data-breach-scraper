@@ -1,4 +1,5 @@
-import puppeteer from 'puppeteer'
+import puppeteer from 'puppeteer-core'
+import chromium from '@sparticuz/chromium'
 
 const pages = [
   'a',
@@ -33,7 +34,15 @@ const months =
   /January|February|March|April|May|June|July|August|September|October|November|December/
 export const handler = async () => {
   const DATA = []
-  const browser = await puppeteer.launch({ headless: false })
+  const browser = await puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath:
+      process.env.NODE_ENV !== 'production'
+        ? './chrome/mac_arm-1131672/chrome-mac/Chromium.app/Contents/MacOS/Chromium'
+        : await chromium.executablePath,
+    headless: process.env.NODE_ENV === 'production',
+  })
   const page = await browser.newPage()
   await page.setViewport({ width: 1280, height: 1024 })
 
@@ -67,6 +76,6 @@ export const handler = async () => {
   return DATA
 }
 
-if (process.env.RUN) {
+if (process.env.NODE_ENV !== 'production') {
   handler()
 }

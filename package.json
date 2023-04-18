@@ -4,14 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prod": "npm i --omit=dev",
+    "format": "npx prettier . --write",
+    "local-chrome": "npx @puppeteer/browsers install chromium@latest",
+    "zip-maine": "cp maine.mjs index.mjs && zip -r maine.zip . -i 'node_modules/*'  -i index.mjs"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "puppeteer": "^19.9.0"
+    "puppeteer-core": "17.1.0"
   },
   "devDependencies": {
+    "@sparticuz/chromium": "106.0.2",
     "prettier": "2.8.7"
   }
 }
