@@ -1,17 +1,9 @@
-import puppeteer from 'puppeteer-core'
-import chromium from '@sparticuz/chromium'
+import { createRow, initBrowser } from './utils.mjs'
 
 export const handler = async () => {
   const DATA = []
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath:
-      process.env.NODE_ENV !== 'production'
-        ? './chrome/mac_arm-1131672/chrome-mac/Chromium.app/Contents/MacOS/Chromium'
-        : await chromium.executablePath,
-    headless: process.env.NODE_ENV === 'production',
-  })
+  const browser = await initBrowser()
+
   const page = await browser.newPage()
 
   // TODO: older archives in XSL format
@@ -19,7 +11,6 @@ export const handler = async () => {
     'https://apps.web.maine.gov/online/aeviewer/ME/40/list.shtml',
     { waitUntil: 'networkidle0' }
   )
-  await page.setViewport({ width: 1280, height: 1024 })
   const pageSizeSelect = await page.waitForSelector(
     '[name="DataTables_Table_0_length"]'
   )
@@ -48,14 +39,24 @@ export const handler = async () => {
     for (const row of rows) {
       try {
         const [reported, bizName] = await row.$$('td')
-        let businessName = await page.evaluate((el) => el.textContent, bizName)
-        businessName = businessName.trim()
-        let reportedDate = await page.evaluate((el) => el.textContent, reported)
-        reportedDate = reportedDate.trim()
-        DATA.push({
-          businessName,
-          reportedDate,
-        })
+        const businessName = await page.evaluate(
+          (el) => el.textContent.trim(),
+          bizName
+        )
+        const reportedDate = await page.evaluate(
+          (el) => el.textContent.trim(),
+          reported
+        )
+        const url = await bizName.$eval('a[href]', (el) =>
+          el.getAttribute('href')
+        )
+        DATA.push(
+          createRow('ME')({
+            businessName,
+            reportedDate,
+            url: 'https://apps.web.maine.gov/online/aeviewer/ME/40/' + url,
+          })
+        )
       } catch (e) {
         console.error(e)
       }
@@ -77,6 +78,6 @@ export const handler = async () => {
   return DATA
 }
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.RUN) {
   handler()
 }

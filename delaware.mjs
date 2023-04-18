@@ -1,24 +1,14 @@
-import puppeteer from 'puppeteer-core'
-import chromium from '@sparticuz/chromium'
+import { createRow, initBrowser } from './utils.mjs'
 
-const handler = async () => {
+export const handler = async () => {
   const DATA = []
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath:
-      process.env.NODE_ENV !== 'production'
-        ? './chrome/mac_arm-1131672/chrome-mac/Chromium.app/Contents/MacOS/Chromium'
-        : await chromium.executablePath,
-    headless: process.env.NODE_ENV === 'production',
-  })
+  const browser = await initBrowser()
   const page = await browser.newPage()
 
   await page.goto(
     'https://attorneygeneral.delaware.gov/fraud/cpu/securitybreachnotification/database/',
     { waitUntil: 'networkidle0' }
   )
-  await page.setViewport({ width: 1280, height: 1024 })
 
   try {
     const table = await page.waitForSelector('#example')
@@ -45,14 +35,16 @@ const handler = async () => {
       reportedDate = reportedDate.trim()
       let numberAffected = await page.evaluate((el) => el.textContent, affected)
       numberAffected = parseInt(numberAffected.trim(), 10)
-      DATA.push({
-        businessName,
-        startDate,
-        endDate,
-        breachDates,
-        reportedDate,
-        numberAffected,
-      })
+      DATA.push(
+        createRow('DE')({
+          businessName,
+          startDate,
+          endDate,
+          breachDates,
+          reportedDate,
+          numberAffected,
+        })
+      )
     }
   } catch (e) {
     console.error(e)
@@ -64,6 +56,6 @@ const handler = async () => {
   return DATA
 }
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.RUN) {
   handler()
 }

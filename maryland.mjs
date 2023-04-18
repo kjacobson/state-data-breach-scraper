@@ -1,24 +1,14 @@
-import puppeteer from 'puppeteer-core'
-import chromium from '@sparticuz/chromium'
+import { createRow, initBrowser } from './utils.mjs'
 
 export const handler = async () => {
   const DATA = []
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath:
-      process.env.NODE_ENV !== 'production'
-        ? './chrome/mac_arm-1131672/chrome-mac/Chromium.app/Contents/MacOS/Chromium'
-        : await chromium.executablePath,
-    headless: process.env.NODE_ENV === 'production',
-  })
+  const browser = await initBrowser()
   const page = await browser.newPage()
 
   await page.goto(
     'https://www.marylandattorneygeneral.gov/Pages/IdentityTheft/breachnotices.aspx',
     { waitUntil: 'networkidle0' }
   )
-  await page.setViewport({ width: 1280, height: 1024 })
 
   try {
     // POPUP
@@ -83,13 +73,15 @@ export const handler = async () => {
           let breachType = (
             await page.evaluate((el) => el.textContent, type)
           ).trim()
-          DATA.push({
-            businessName,
-            reportedDate,
-            numberAffected,
-            dataTypes,
-            breachType,
-          })
+          DATA.push(
+            createRow('MD')({
+              businessName,
+              reportedDate,
+              numberAffected,
+              dataTypes,
+              breachType,
+            })
+          )
         } catch (e) {
           console.error(e)
         }
@@ -137,6 +129,6 @@ export const handler = async () => {
   return DATA
 }
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.RUN) {
   handler()
 }

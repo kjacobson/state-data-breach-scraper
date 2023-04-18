@@ -1,21 +1,12 @@
-import puppeteer from 'puppeteer-core'
-import chromium from '@sparticuz/chromium'
+import { createRow, initBrowser } from './utils.mjs'
 
 export const handler = async () => {
   const DATA = []
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath:
-      process.env.NODE_ENV !== 'production'
-        ? './chrome/mac_arm-1131672/chrome-mac/Chromium.app/Contents/MacOS/Chromium'
-        : await chromium.executablePath,
-    headless: process.env.NODE_ENV === 'production',
-  })
+  const browser = await initBrowser()
   const page = await browser.newPage()
 
   await page.goto('https://dojmt.gov/consumer/databreach/')
-  await page.setViewport({ width: 1080, height: 1024 })
+  // await page.setViewport({ width: 1080, height: 1024 })
   const lastPage = await page.waitForSelector(
     '.footable-page-nav[aria-label="last page"] > a[href]'
   )
@@ -73,14 +64,16 @@ export const handler = async () => {
           affected
         )
         numberAffected = parseInt(numberAffected, 10)
-        DATA.push({
-          businessName,
-          letterURL,
-          startDate,
-          endDate,
-          reportedDate,
-          numberAffected: isNaN(numberAffected) ? 'Unknown' : numberAffected,
-        })
+        DATA.push(
+          createRow('MT')({
+            businessName,
+            letterURL,
+            startDate,
+            endDate,
+            reportedDate,
+            numberAffected: isNaN(numberAffected) ? 'Unknown' : numberAffected,
+          })
+        )
       } catch (e) {
         console.error(e)
         console.error(await page.evaluate((el) => el.innerHTML, row))
@@ -102,6 +95,6 @@ export const handler = async () => {
   return DATA
 }
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.RUN) {
   handler()
 }

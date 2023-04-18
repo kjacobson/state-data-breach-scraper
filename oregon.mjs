@@ -1,23 +1,13 @@
-import puppeteer from 'puppeteer-core'
-import chromium from '@sparticuz/chromium'
+import { createRow, initBrowser } from './utils.mjs'
 
 export const handler = async () => {
   const DATA = []
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath:
-      process.env.NODE_ENV !== 'production'
-        ? './chrome/mac_arm-1131672/chrome-mac/Chromium.app/Contents/MacOS/Chromium'
-        : await chromium.executablePath,
-    headless: process.env.NODE_ENV === 'production',
-  })
+  const browser = await initBrowser()
   const page = await browser.newPage()
 
   await page.goto('https://justice.oregon.gov/consumer/DataBreach/', {
     waitUntil: 'networkidle0',
   })
-  await page.setViewport({ width: 1280, height: 1024 })
   const pageSizeSelect = await page.waitForSelector('[name="grid_length"]')
   await pageSizeSelect.select('100')
   let err
@@ -97,13 +87,15 @@ export const handler = async () => {
         } else {
           startDate = dateString.trim()
         }
-        DATA.push({
-          businessName,
-          breachDates,
-          startDate,
-          endDate,
-          reportedDate,
-        })
+        DATA.push(
+          createRow('OR')({
+            businessName,
+            breachDates,
+            startDate,
+            endDate,
+            reportedDate,
+          })
+        )
       } catch (e) {
         console.error(e)
       }
@@ -125,6 +117,6 @@ export const handler = async () => {
   return DATA
 }
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.RUN) {
   handler()
 }

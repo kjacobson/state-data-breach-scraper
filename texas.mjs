@@ -1,24 +1,14 @@
-import puppeteer from 'puppeteer-core'
-import chromium from '@sparticuz/chromium'
+import { createRow, initBrowser } from './utils.mjs'
 
 export const handler = async () => {
   const DATA = []
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath:
-      process.env.NODE_ENV !== 'production'
-        ? './chrome/mac_arm-1131672/chrome-mac/Chromium.app/Contents/MacOS/Chromium'
-        : await chromium.executablePath,
-    headless: process.env.NODE_ENV === 'production',
-  })
+  const browser = await initBrowser()
   const page = await browser.newPage()
 
   await page.goto(
     'https://oag.my.site.com/datasecuritybreachreport/apex/DataSecurityReportsPage',
     { waitUntil: 'networkidle0' }
   )
-  await page.setViewport({ width: 1280, height: 1024 })
   const lastPage = await page.waitForSelector('.paginate_button.last')
   const nav = page.waitForSelector('.paginate_button.last.disabled')
   await page.evaluate((el) => el.click(), lastPage)
@@ -91,17 +81,19 @@ export const handler = async () => {
           notice
         )
         noticeMethods = noticeMethods.split(';')
-        DATA.push({
-          businessName,
-          businessAddress,
-          businessCity,
-          businessState,
-          businessZip,
-          publishedDate,
-          numberAffected,
-          dataAccessed,
-          noticeMethods,
-        })
+        DATA.push(
+          createRow('TX')({
+            businessName,
+            businessAddress,
+            businessCity,
+            businessState,
+            businessZip,
+            publishedDate,
+            numberAffected,
+            dataAccessed,
+            noticeMethods,
+          })
+        )
       } catch (e) {
         console.error(e)
       }
@@ -122,6 +114,6 @@ export const handler = async () => {
   return DATA
 }
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.RUN) {
   handler()
 }

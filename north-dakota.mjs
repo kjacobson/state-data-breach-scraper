@@ -1,23 +1,13 @@
-import puppeteer from 'puppeteer-core'
-import chromium from '@sparticuz/chromium'
+import { createRow, initBrowser } from './utils.mjs'
 
 export const handler = async () => {
   const DATA = []
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath:
-      process.env.NODE_ENV !== 'production'
-        ? './chrome/mac_arm-1131672/chrome-mac/Chromium.app/Contents/MacOS/Chromium'
-        : await chromium.executablePath,
-    headless: process.env.NODE_ENV === 'production',
-  })
+  const browser = await initBrowser()
   const page = await browser.newPage()
 
   await page.goto(
     'https://attorneygeneral.nd.gov/consumer-resources/data-breach-notices'
   )
-  await page.setViewport({ width: 1080, height: 1024 })
   const lastPage = await page.waitForSelector('.pagination .pager-last')
   await lastPage.click()
   await page.waitForSelector('.pagination .pager-last', { hidden: true })
@@ -78,24 +68,27 @@ export const handler = async () => {
         )
         numberAffected = parseInt(numberAffected, 10)
         numberAffected = isNaN(numberAffected ? 'Unknown' : numberAffected)
-        DATA.push({
-          businessName,
-          dba: dbaName,
-          letterURL,
-          startDate:
-            new Date(startDate).toString() === 'Invalid Date'
-              ? startDate
-              : new Date(startDate).toLocaleDateString(),
-          endDate:
-            new Date(endDate).toString() === 'Invalid Date'
-              ? endDate
-              : new Date(endDate).toLocaleDateString(),
-          reportedDate:
-            new Date(reportedDate).toString() === 'Invalid Date'
-              ? reportedDate
-              : new Date(reportedDate).toLocaleDateString(),
-          numberAffected,
-        })
+        DATA.push(
+          createRow('ND')({
+            businessName,
+            dba: dbaName,
+            letterURL,
+            breachDates,
+            startDate:
+              new Date(startDate).toString() === 'Invalid Date'
+                ? startDate
+                : new Date(startDate).toLocaleDateString(),
+            endDate:
+              new Date(endDate).toString() === 'Invalid Date'
+                ? endDate
+                : new Date(endDate).toLocaleDateString(),
+            reportedDate:
+              new Date(reportedDate).toString() === 'Invalid Date'
+                ? reportedDate
+                : new Date(reportedDate).toLocaleDateString(),
+            numberAffected,
+          })
+        )
       } catch (e) {
         console.error(e)
       }
@@ -130,6 +123,6 @@ export const handler = async () => {
   return DATA
 }
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.RUN) {
   handler()
 }

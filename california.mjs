@@ -1,23 +1,13 @@
-import puppeteer from 'puppeteer-core'
-import chromium from '@sparticuz/chromium'
+import { createRow, initBrowser } from './utils.mjs'
 
-const handler = async () => {
+export const handler = async () => {
   const DATA = []
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath:
-      process.env.NODE_ENV !== 'production'
-        ? './chrome/mac_arm-1131672/chrome-mac/Chromium.app/Contents/MacOS/Chromium'
-        : await chromium.executablePath,
-    headless: process.env.NODE_ENV === 'production',
-  })
+  const browser = await initBrowser()
   const page = await browser.newPage()
 
   await page.goto('https://oag.ca.gov/privacy/databreach/list', {
     waitUntil: 'networkidle0',
   })
-  await page.setViewport({ width: 1280, height: 1024 })
 
   try {
     const table = await page.waitForSelector('#block-system-main .views-table')
@@ -36,11 +26,13 @@ const handler = async () => {
       breachDates = breachDates.trim().split(', ')
       let reportedDate = await page.evaluate((el) => el.textContent, reported)
       reportedDate = reportedDate.trim()
-      DATA.push({
-        businessName,
-        breachDates,
-        reportedDate,
-      })
+      DATA.push(
+        createRow('CA')({
+          businessName,
+          breachDates,
+          reportedDate,
+        })
+      )
     }
   } catch (e) {
     console.error(e)
@@ -52,6 +44,6 @@ const handler = async () => {
   return DATA
 }
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.RUN) {
   handler()
 }

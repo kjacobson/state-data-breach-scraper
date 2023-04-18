@@ -1,19 +1,9 @@
-import puppeteer from 'puppeteer-core'
-import chromium from '@sparticuz/chromium'
+import { createRow, initBrowser } from './utils.mjs'
 
 export const handler = async () => {
   const DATA = []
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath:
-      process.env.NODE_ENV !== 'production'
-        ? './chrome/mac_arm-1131672/chrome-mac/Chromium.app/Contents/MacOS/Chromium'
-        : await chromium.executablePath,
-    headless: process.env.NODE_ENV === 'production',
-  })
+  const browser = await initBrowser()
   const page = await browser.newPage()
-  await page.setViewport({ width: 1280, height: 1024 })
   await page.goto(
     'https://www.cyber.nj.gov/threat-center/public-data-breaches/',
     { waitUntil: 'networkidle0' }
@@ -27,11 +17,13 @@ export const handler = async () => {
   const href = await page.evaluate((el) => el.getAttribute('href'), link)
   const date = await featuredPost.waitForSelector('.postDate')
   const reportedDate = await page.evaluate((el) => el.textContent.trim(), date)
-  DATA.push({
-    businessName,
-    reportedDate: new Date(reportedDate).toLocaleDateString(),
-    url: 'https://www.cyber.nj.gov' + href,
-  })
+  DATA.push(
+    createRow('NJ')({
+      businessName,
+      reportedDate: new Date(reportedDate).toLocaleDateString(),
+      url: 'https://www.cyber.nj.gov' + href,
+    })
+  )
 
   const blog = await page.waitForSelector('.mainContentBlock')
   const posts = await blog.$$('.container-fluid > #alertsList')
@@ -49,11 +41,13 @@ export const handler = async () => {
       (el) => el.textContent.trim(),
       date
     )
-    DATA.push({
-      businessName,
-      reportedDate: new Date(reportedDate).toLocaleDateString(),
-      url: 'https://www.cyber.nj.gov' + href,
-    })
+    DATA.push(
+      createRow('NJ')({
+        businessName,
+        reportedDate: new Date(reportedDate).toLocaleDateString(),
+        url: 'https://www.cyber.nj.gov' + href,
+      })
+    )
   }
   await browser.close()
 
@@ -61,6 +55,6 @@ export const handler = async () => {
   return DATA
 }
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.RUN) {
   handler()
 }

@@ -1,23 +1,13 @@
-import puppeteer from 'puppeteer-core'
-import chromium from '@sparticuz/chromium'
+import { createRow, initBrowser } from './utils.mjs'
 
-const handler = async () => {
+export const handler = async () => {
   const DATA = []
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath:
-      process.env.NODE_ENV !== 'production'
-        ? './chrome/mac_arm-1131672/chrome-mac/Chromium.app/Contents/MacOS/Chromium'
-        : await chromium.executablePath,
-    headless: process.env.NODE_ENV === 'production',
-  })
+  const browser = await initBrowser()
   const page = await browser.newPage()
 
   await page.goto('https://www.atg.wa.gov/data-breach-notifications', {
     waitUntil: 'networkidle0',
   })
-  await page.setViewport({ width: 1280, height: 1024 })
   const lastPage = await page.waitForSelector('.page-numbers.last > a[href]')
   const nav = page.waitForNavigation()
   await page.evaluate((el) => el.click(), lastPage)
@@ -48,29 +38,44 @@ const handler = async () => {
         const [reported, bizName, start, affected, dataTypes] = await row.$$(
           'td'
         )
-        let businessName = await page.evaluate((el) => el.textContent, bizName)
-        businessName = businessName.trim()
-        let startDate = await page.evaluate((el) => el.textContent, start)
-        startDate = startDate.trim()
-        let reportedDate = await page.evaluate((el) => el.textContent, reported)
-        reportedDate = reportedDate.trim()
+        const businessName = await page.evaluate(
+          (el) => el.textContent.trim(),
+          bizName
+        )
+        let letterURL = ''
+        try {
+          letterURL = await bizName.$eval('a[href]', (el) =>
+            el.getAttribute('href').trim()
+          )
+        } catch (e) {}
+        const startDate = await page.evaluate(
+          (el) => el.textContent.trim(),
+          start
+        )
+        const reportedDate = await page.evaluate(
+          (el) => el.textContent.trim(),
+          reported
+        )
         let numberAffected = await page.evaluate(
-          (el) => el.textContent,
+          (el) => el.textContent.trim(),
           affected
         )
-        numberAffected = parseInt(numberAffected.trim(), 10)
+        numberAffected = parseInt(numberAffected, 10)
         let dataAccessed = await page.evaluate(
-          (el) => el.textContent,
+          (el) => el.textContent.trim(),
           dataTypes
         )
-        dataAccessed = dataAccessed.trim().split('; ')
-        DATA.push({
-          businessName,
-          startDate,
-          reportedDate,
-          numberAffected,
-          dataAccessed,
-        })
+        dataAccessed = dataAccessed.split('; ')
+        DATA.push(
+          createRow('WA')({
+            businessName,
+            startDate,
+            reportedDate,
+            numberAffected,
+            dataAccessed,
+            letterURL,
+          })
+        )
       } catch (e) {
         console.error(e)
       }
@@ -91,6 +96,6 @@ const handler = async () => {
   return DATA
 }
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.RUN) {
   handler()
 }

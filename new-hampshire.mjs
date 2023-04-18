@@ -1,5 +1,4 @@
-import puppeteer from 'puppeteer-core'
-import chromium from '@sparticuz/chromium'
+import { createRow, initBrowser } from './utils.mjs'
 
 const pages = [
   'a',
@@ -34,17 +33,8 @@ const months =
   /January|February|March|April|May|June|July|August|September|October|November|December/
 export const handler = async () => {
   const DATA = []
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath:
-      process.env.NODE_ENV !== 'production'
-        ? './chrome/mac_arm-1131672/chrome-mac/Chromium.app/Contents/MacOS/Chromium'
-        : await chromium.executablePath,
-    headless: process.env.NODE_ENV === 'production',
-  })
+  const browser = await initBrowser()
   const page = await browser.newPage()
-  await page.setViewport({ width: 1280, height: 1024 })
 
   for (const letter of pages) {
     await page.goto(
@@ -63,11 +53,13 @@ export const handler = async () => {
       businessName = businessName.trim()
       businessName = businessName.substring(0, businessName.length - 1)
       const reportedDate = text.substring(breakPoint)
-      DATA.push({
-        businessName,
-        reportedDate: new Date(reportedDate).toLocaleDateString(),
-        url: 'https://www.doj.nh.gov/consumer/security-breaches/' + href,
-      })
+      DATA.push(
+        createRow('NH')({
+          businessName,
+          reportedDate: new Date(reportedDate).toLocaleDateString(),
+          url: 'https://www.doj.nh.gov/consumer/security-breaches/' + href,
+        })
+      )
     }
   }
   await browser.close()
@@ -76,6 +68,6 @@ export const handler = async () => {
   return DATA
 }
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.RUN) {
   handler()
 }
