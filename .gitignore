@@ -3,3 +3,6 @@ node_modules/
 chrome/
 *.zip
 index.mjs
+*.db
+*.db-shm
+*.db-wal

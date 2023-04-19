@@ -4,7 +4,7 @@ import chromium from '@sparticuz/chromium'
 export const createRow = (state) => (data) => {
   return {
     state,
-    business_name: data.businessName || '',
+    entity_name: data.businessName || '',
     dba: data.dba || 'N/A', // ND only
     business_address: data.businessAddress || '', // TX only
     business_city: data.businessCity || '', // TX only
