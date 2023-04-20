@@ -1,4 +1,4 @@
-import { createRow, initBrowser } from './utils.mjs'
+import { createRow, initBrowser } from '../utils.mjs'
 
 const pages = [
   'a',

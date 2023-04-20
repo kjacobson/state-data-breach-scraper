@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: An AWS Serverless Specification template describing your function.
+Resources:
+  hawaii:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs16.x
+      CodeUri: .
+      Description: ''
+      MemorySize: 3008
+      Timeout: 600
+      Role: 'arn:aws:iam::094208794241:role/service-role/maine-role-2anlnecz'
+      Environment:
+        Variables:
+          NODE_ENV: production
+      Layers:
+        - 'arn:aws:lambda:us-east-1:094208794241:layer:chromium:1'
+      RuntimeManagementConfig:
+        UpdateRuntimeOn: Auto
