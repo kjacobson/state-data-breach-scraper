@@ -1,6 +1,6 @@
 const dayString = new Date()
-  .toLocaleString('en-US', { hour12: false })
-  .replace(/[\/\,\ \:A-Z]+/g, '')
+  .toLocaleString('en-SE', { hour12: false })
+  .replace(/[\-\/\,\ \.\:A-Z]+/g, '')
 
 
 const states = [
@@ -8,7 +8,7 @@ const states = [
   'delaware',
   'hawaii',
   'iowa',
-  // 'maine',
+  'maine',
   'maryland',
   'montana',
   'new-hampshire',
@@ -53,7 +53,7 @@ export const handler = async () => {
     await Promise.all(tasks)
     const putCommand = new PutObjectCommand({
       Bucket: 'ksj-lambda-zips',
-      Key: dbFilename,
+      Key: `database/${dbFilename}`,
       Body: JSON.stringify(db.data, null, 2),
     })
     await s3Client.send(putCommand)
