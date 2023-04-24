@@ -53,7 +53,7 @@ export const handler = async () => {
         DATA.push(
           createRow('ME')({
             businessName,
-            reportedDate,
+            reportedDate: new Date(reportedDate).toLocaleDateString(),
             url: 'https://apps.web.maine.gov/online/aeviewer/ME/40/' + url,
           })
         )
