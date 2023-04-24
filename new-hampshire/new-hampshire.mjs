@@ -30,7 +30,7 @@ const pages = [
   'numeric',
 ]
 const months =
-  /January|February|March|April|May|June|July|August|September|October|November|December/
+  /January|February|Feburary|March|April|Aptil|May|June|July|August|September|October|Ocotber|November|December/
 export const handler = async () => {
   const DATA = []
   const browser = await initBrowser()
@@ -42,21 +42,24 @@ export const handler = async () => {
       { waitUntil: 'networkidle0' }
     )
     await page.waitForSelector('#bodycontainer > main')
-    const listItems = await page.$$('#bodycontainer > main ul > li > a')
+    const listItems = await page.$$('#bodycontainer > main > .wide-width > ul > li > a')
     for (const item of listItems) {
-      let text = await page.evaluate((el) => el.textContent, item)
-      text = text.trim()
+      const text = await page.evaluate((el) => el.textContent.trim(), item)
       const href = await page.evaluate((el) => el.getAttribute('href'), item)
       const breakPoint = text.search(months)
-      let businessName = text.substring(0, breakPoint)
-      // remove comma and one or more spaces between company name and date
-      businessName = businessName.trim()
-      businessName = businessName.substring(0, businessName.length - 1)
-      const reportedDate = text.substring(breakPoint)
+      let businessName
+      let reportedDate
+      if (breakPoint > 0) {
+        businessName = text.substring(0, breakPoint)
+        // remove comma and one or more spaces between company name and date
+        businessName = businessName.trim()
+        businessName = businessName.substring(0, businessName.length - 1)
+        reportedDate = text.substring(breakPoint)
+      }
       DATA.push(
         createRow('NH')({
           businessName,
-          reportedDate: new Date(reportedDate).toLocaleDateString(),
+          reportedDate: reportedDate ? new Date(reportedDate).toLocaleDateString() : '',
           url: 'https://www.doj.nh.gov/consumer/security-breaches/' + href,
         })
       )
