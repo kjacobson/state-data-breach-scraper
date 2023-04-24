@@ -1,0 +1,36 @@
+{
+  "name": "breach",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prod": "npm i --omit=dev",
+    "format": "npx prettier . --write",
+    "local-chrome": "npx @puppeteer/browsers install chromium@latest",
+    "rewrite-utils": "sed -i '' 's,../utils.mjs,./utils.mjs,' index.mjs",
+    "zip-all": "cp scrape-all.mjs index.mjs && zip -r scrape-all.zip . -i index.mjs -i 'node_modules/lowdb/*' -i 'node_modules/steno/*'",
+    "zip-ca": "cp california/california.mjs index.mjs && npm run rewrite-utils && zip -r california/california.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs -i california/template.yml && rm index.mjs",
+    "zip-de": "cp delaware/delaware.mjs index.mjs && npm run rewrite-utils && zip -r delaware/delaware.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs && rm index.mjs",
+    "zip-hi": "cp hawaii/hawaii.mjs index.mjs && npm run rewrite-utils && zip -r hawaii/hawaii.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs && rm index.mjs",
+    "zip-ia": "cp iowa/iowa.mjs index.mjs && npm run rewrite-utils && zip -r iowa/iowa.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs && rm index.mjs",
+    "zip-me": "cp maine/maine.mjs index.mjs && npm run rewrite-utils && zip -r maine/maine.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs && rm index.mjs",
+    "zip-md": "cp maryland/maryland.mjs index.mjs && npm run rewrite-utils && zip -r maryland/maryland.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs && rm index.mjs",
+    "zip-mt": "cp montana/montana.mjs index.mjs && npm run rewrite-utils && zip -r montana/montana.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs && rm index.mjs",
+    "zip-nh": "cp new-hampshire/new-hampshire.mjs index.mjs && npm run rewrite-utils && zip -r new-hampshire/new-hampshire.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs && rm index.mjs",
+    "zip-nj": "cp new-jersey/new-jersey.mjs index.mjs && npm run rewrite-utils && zip -r new-jersey/new-jersey.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs && rm index.mjs",
+    "zip-nd": "cp north-dakota/north-dakota.mjs index.mjs && npm run rewrite-utils && zip -r north-dakota/north-dakota.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs && rm index.mjs",
+    "zip-or": "cp oregon/oregon.mjs index.mjs && npm run rewrite-utils && zip -r oregon/oregon.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs && rm index.mjs",
+    "zip-tx": "cp texas/texas.mjs index.mjs && npm run rewrite-utils && zip -r texas/texas.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs && rm index.mjs",
+    "zip-wa": "cp washington/washington.mjs index.mjs && npm run rewrite-utils && zip -r washington/washington.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs && rm index.mjs"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@sparticuz/chromium": "106.0.2",
+    "lowdb": "^6.0.0",
+    "puppeteer-core": "17.1.0"
+  },
+  "devDependencies": {
+    "prettier": "2.8.7"
+  }
+}
