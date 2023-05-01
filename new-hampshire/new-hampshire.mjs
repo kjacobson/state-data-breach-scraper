@@ -60,7 +60,8 @@ export const handler = async () => {
           try {
             const urlParts = href.split("-")
             const urlEnd = urlParts.pop()
-            const [urlDate, pdf] = urlEnd.split(".")
+            let [urlDate, pdf] = urlEnd.split(".")
+            urlDate = urlDate.replaceAll(/[^0-9]/g, '')
             if (urlDate.length === 8) {
               const dateString = `${urlDate.substring(0, 4)}-${urlDate.substring(4, 6)}-${urlDate.substring(6, 8)}`
               const attemptDate = new Date(dateString)
@@ -73,15 +74,6 @@ export const handler = async () => {
         }
         if (!reportedDate) {
           reportedDate = text.substring(breakPoint)
-            .replace("20220", "2022")
-            .replace("20202", "2020")
-            .replace("20212", "2022")
-            .replace("20166", "2016")
-            .replace("12017", "2017")
-            .replace("2033", "2022")
-            .replace("20144", "2014")
-            .replace("202", "2021")
-            .replace("1986", "2016")
         }
       }
       DATA.push(
