@@ -58,19 +58,21 @@ export const handler = async () => {
         businessName = businessName.substring(0, businessName.length - 1)
         if (href) {
           try {
-            const urlParts = href.split("-")
+            const urlParts = href.split('-')
             const urlEnd = urlParts.pop()
-            let [urlDate, pdf] = urlEnd.split(".")
+            let [urlDate, pdf] = urlEnd.split('.')
             urlDate = urlDate.replaceAll(/[^0-9]/g, '')
             if (urlDate.length === 8) {
-              const dateString = `${urlDate.substring(0, 4)}-${urlDate.substring(4, 6)}-${urlDate.substring(6, 8)}`
+              const dateString = `${urlDate.substring(
+                0,
+                4
+              )}-${urlDate.substring(4, 6)}-${urlDate.substring(6, 8)}`
               const attemptDate = new Date(dateString)
-              if (attemptDate.toString() !== "Invalid Date") {
+              if (attemptDate.toString() !== 'Invalid Date') {
                 reportedDate = attemptDate
               }
             }
-          }
-          catch(err) {}
+          } catch (err) {}
         }
         if (!reportedDate) {
           reportedDate = text.substring(breakPoint)
