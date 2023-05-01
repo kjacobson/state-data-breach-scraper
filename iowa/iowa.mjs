@@ -45,6 +45,7 @@ export const handler = async () => {
           (el) => el.textContent.trim(),
           reported
         )
+        reportedDate = reportedDate.replace('-', '/')
         DATA.push(
           createRow('IA')({
             businessName,

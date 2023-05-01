@@ -68,8 +68,8 @@ export const handler = async () => {
             affected
           )
           numberAffected = parseInt(numberAffected.trim(), 10)
-          let dataTypes = await page.evaluate((el) => el.textContent, data)
-          dataTypes = dataTypes.trim().split(', ')
+          const dataTypes = await page.evaluate((el) => el.textContent.trim(), data)
+          const dataAccessed = dataTypes.split(', ')
           let breachType = (
             await page.evaluate((el) => el.textContent, type)
           ).trim()
@@ -78,7 +78,7 @@ export const handler = async () => {
               businessName,
               reportedDate,
               numberAffected,
-              dataTypes,
+              dataAccessed,
               breachType,
             })
           )

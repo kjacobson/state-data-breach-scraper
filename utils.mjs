@@ -5,7 +5,7 @@ export const createRow = (state) => (data) => {
   return {
     state,
     entity_name: data.businessName || '',
-    dba: data.dba || 'N/A', // ND only
+    dba: data.dba || '', // ND only
     business_address: data.businessAddress || '', // TX only
     business_city: data.businessCity || '', // TX only
     business_state: data.businessState || '', // TX only
@@ -15,11 +15,12 @@ export const createRow = (state) => (data) => {
     breach_dates: data.breachDates || '',
     reported_date: data.reportedDate || '',
     published_date: data.publishedDate || '', // TX only
-    number_affected: data.numberAffected || 'Unknown',
-    data_accessed: data.dataAccessed || 'Not available',
-    notice_methods: data.noticeMethods || 'Not available', // TX only
-    breach_type: data.breachType || 'Not available',
-    letter_url: data.letterURL || 'N/A',
+    number_affected: data.numberAffected || '',
+    data_accessed: data.dataAccessed || '',
+    notice_methods: data.noticeMethods || '', // TX only
+    breach_type: data.breachType || '',
+    data_source: data.dataSource || '',
+    letter_url: data.letterURL || '',
     url: data.url || '',
   }
 }

@@ -2,7 +2,6 @@ const dayString = new Date()
   .toLocaleString('en-SE', { hour12: false })
   .replace(/[\-\/\,\ \.\:A-Z]+/g, '')
 
-
 const states = [
   'california',
   'delaware',
@@ -17,10 +16,10 @@ const states = [
   'oregon',
   'texas',
   'washington',
+  'hipaa',
 ]
 
 export const handler = async () => {
-
   const dbFilename = `${dayString}.json`
   if (process.env.NODE_ENV === 'production') {
     const { Low, Memory } = await import('lowdb')
@@ -31,6 +30,9 @@ export const handler = async () => {
       '@aws-sdk/client-lambda'
     )
     const { S3Client, PutObjectCommand } = await import('@aws-sdk/client-s3')
+    const { ElasticBeanstalkClient, RestartAppServerCommand } = await import(
+      '@aws-sdk/client-elastic-beanstalk'
+    )
     const lambdaClient = new LambdaClient({ region: 'us-east-1' })
     const s3Client = new S3Client({ region: 'us-east-1' })
     const tasks = states.map((state) => {
@@ -47,7 +49,7 @@ export const handler = async () => {
         .then(JSON.parse)
         .then((result) => {
           Array.prototype.push.apply(db.data.breaches, result)
-          return true;
+          return true
         })
     })
     await Promise.all(tasks)
@@ -57,6 +59,12 @@ export const handler = async () => {
       Body: JSON.stringify(db.data, null, 2),
     })
     await s3Client.send(putCommand)
+    const ebClient = new ElasticBeanstalkClient({ region: 'us-east-1' })
+    const restartCommand = new RestartAppServerCommand({
+      EnvironmentId: 'e-36hmfpi937',
+      EnvironmentName: 'breach-viewer-env',
+    })
+    await ebClient.send(restartCommand)
   } else {
     const { Low } = await import('lowdb')
     const { JSONFile } = await import('lowdb/node')

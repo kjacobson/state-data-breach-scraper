@@ -8,7 +8,8 @@
     "format": "npx prettier . --write",
     "local-chrome": "npx @puppeteer/browsers install chromium@latest",
     "rewrite-utils": "sed -i '' 's,../utils.mjs,./utils.mjs,' index.mjs",
-    "zip-all": "cp scrape-all.mjs index.mjs && zip -r scrape-all.zip . -i index.mjs -i 'node_modules/lowdb/*' -i 'node_modules/steno/*'",
+    "zip-scrape": "cp scrape-all.mjs index.mjs && zip -r scrape-all.zip . -i index.mjs -i 'node_modules/lowdb/*' -i 'node_modules/steno/*'",
+    "zip-all": "npm run zip-ca && npm run zip-de && npm run zip-hi && npm run zip-ia && npm run zip-me && npm run zip-md && npm run zip-mt && npm run zip-nh && npm run zip-nj && npm run zip-nd && npm run zip-or && npm run zip-tx && npm run zip-wa && npm run zip-hipaa",
     "zip-ca": "cp california/california.mjs index.mjs && npm run rewrite-utils && zip -r california/california.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs -i california/template.yml && rm index.mjs",
     "zip-de": "cp delaware/delaware.mjs index.mjs && npm run rewrite-utils && zip -r delaware/delaware.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs && rm index.mjs",
     "zip-hi": "cp hawaii/hawaii.mjs index.mjs && npm run rewrite-utils && zip -r hawaii/hawaii.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs && rm index.mjs",
@@ -21,7 +22,8 @@
     "zip-nd": "cp north-dakota/north-dakota.mjs index.mjs && npm run rewrite-utils && zip -r north-dakota/north-dakota.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs && rm index.mjs",
     "zip-or": "cp oregon/oregon.mjs index.mjs && npm run rewrite-utils && zip -r oregon/oregon.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs && rm index.mjs",
     "zip-tx": "cp texas/texas.mjs index.mjs && npm run rewrite-utils && zip -r texas/texas.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs && rm index.mjs",
-    "zip-wa": "cp washington/washington.mjs index.mjs && npm run rewrite-utils && zip -r washington/washington.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs && rm index.mjs"
+    "zip-wa": "cp washington/washington.mjs index.mjs && npm run rewrite-utils && zip -r washington/washington.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs && rm index.mjs",
+    "zip-hipaa": "cp hipaa.mjs index.mjs && zip -r hipaa.zip . -i 'node_modules/*'  -i index.mjs -i utils.mjs && rm index.mjs"
   },
   "author": "",
   "license": "ISC",
