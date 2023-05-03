@@ -14,6 +14,7 @@ export const handler = async () => {
   await nav
 
   let done = false
+  let archive = false
   while (!done) {
     const selectedPageLI = await page.waitForSelector(
       '.ui-paginator-page.ui-state-active'
@@ -94,7 +95,33 @@ export const handler = async () => {
       await page.evaluate((el) => el.click(), prevPageLink)
       await navWait
     } else {
-      done = true
+      if (!archive) {
+        archive = true
+        console.log('Scraping archive')
+        await page.waitForSelector(
+          '.ui-dialog[aria-hidden="true"] .ui-dialog-content'
+        )
+        const archiveButton = await page.waitForXPath(
+          "//button[contains(@class, 'ui-button')]/span[contains(@class, 'ui-button-text')][contains(text(), 'Archive')]"
+        )
+        console.log(archiveButton)
+        await Promise.all([
+          await page.evaluate((el) => el.click(), archiveButton),
+          await page.waitForSelector(
+            '.ui-dialog:not([aria-hidden="true"]) .ui-dialog-content'
+          ),
+        ])
+        await page.waitForSelector(
+          '.ui-dialog[aria-hidden="true"] .ui-dialog-content'
+        )
+
+        const lastPage = await page.waitForSelector('.ui-paginator-last')
+        const nav = page.waitForSelector('.ui-paginator-last.ui-state-disabled')
+        await page.evaluate((el) => el.click(), lastPage)
+        await nav
+      } else {
+        done = true
+      }
     }
   }
 
