@@ -254,6 +254,7 @@ export const handler = async () => {
             numberAffected = undefined
             dataAccessed = undefined
           }
+          done = true
         }
         currentEl = sibling
       }
