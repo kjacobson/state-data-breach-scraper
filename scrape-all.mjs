@@ -16,6 +16,7 @@ const states = [
   'oregon',
   'texas',
   'washington',
+  'wisconsin',
   'hipaa',
 ]
 
@@ -72,6 +73,7 @@ export const handler = async () => {
     const db = new Low(adapter, { breaches: [] })
     await db.read()
     for (const state of states) {
+      // TODO: this will break for hipaa, which is not in a subdirectory
       const fn = (await import(`./${state}/${state}.mjs`)).handler
       const result = await fn()
       console.log(result)
